@@ -1,0 +1,1 @@
+curl -i -X POST -d '{"uid":"markosaaaaa","apikey":"markos-api-key","value":"100","time":"1429555540374"}' -H "Accept: application/json" -H "Content-Type: application/json"  http://localhost:8080/hydromon/api/sensor/1/addvalue

@@ -1,0 +1,1 @@
+curl -i -X POST -d '{"apikey":"loremipsumkey","name":"EC-probe","description":"Lorem ipsum description"}' -H "Accept: application/json" -H "Content-Type: application/json"  http://localhost:8080/hydromon/api/sensor/add
