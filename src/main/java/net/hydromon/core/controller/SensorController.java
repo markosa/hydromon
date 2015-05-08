@@ -107,12 +107,19 @@ public class SensorController {
 			sensor.setDescription(addSensorDTO.getDescription());
 			sensor.setName(addSensorDTO.getName());
 			sensor.setUser(user);
+			sensor.setChart(addSensorDTO.getChart());
+			sensor.setLocation(addSensorDTO.getLocation());
+			sensor.setType(addSensorDTO.getType());
+
 			sensor = sensorService.addSensor(sensor);
 
 			if (sensor != null) {
 				sensorDTO.setDescription(sensor.getDescription());
 				sensorDTO.setName(sensor.getName());
 				sensorDTO.setId(sensor.getId());
+				sensorDTO.setChart(sensor.getChart());
+				sensorDTO.setLocation(sensor.getLocation());
+				sensorDTO.setType(sensor.getType());
 				sensorDTO.setStatus("OK");
 			} else {
 				sensorDTO.setStatus("FAIL");
@@ -143,7 +150,7 @@ public class SensorController {
 
 		return new ResponseEntity<List<SensorValueDTO>>(valuesDTO, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "{id}/listvaluesrange", method = RequestMethod.POST, headers = "Accept=*/*", produces = "application/json")
 	public @ResponseBody ResponseEntity<List<SensorValueDTO>> listValues(@PathVariable Long id, @Valid @RequestBody GetSensorValuesRange getSensorValues) {
 		List<SensorValueDTO> valuesDTO = new ArrayList<SensorValueDTO>();

@@ -15,5 +15,9 @@ public interface ValueService {
 	List<SensorValue> getValues(Sensor sensor);
 
 	List<SensorValue> getValues(Sensor sensor, Timestamp start, Timestamp end);
+	
+	String getLatestSensorValue(Sensor sensor);
+	
+	List<String> getLatestSensorValues(Sensor sensor, int n);
 
 }

@@ -1,5 +1,7 @@
 package net.hydromon.core.dto;
 
+import java.util.List;
+
 
 public class SensorDTO extends BaseResponseDTO {
 
@@ -14,6 +16,10 @@ public class SensorDTO extends BaseResponseDTO {
 	private String location;
 	private String type;
 	private String chart;
+	
+	private String latestValue;
+	private List<String> latestValues;
+	
 	
 	public Long getId() {
 		return id;
@@ -50,6 +56,18 @@ public class SensorDTO extends BaseResponseDTO {
 	}
 	public void setChart(String chart) {
 		this.chart = chart;
+	}
+	public String getLatestValue() {
+		return latestValue;
+	}
+	public void setLatestValue(String latestValue) {
+		this.latestValue = latestValue;
+	}
+	public List<String> getLatestValues() {
+		return latestValues;
+	}
+	public void setLatestValues(List<String> latestValues) {
+		this.latestValues = latestValues;
 	}
 	
 	

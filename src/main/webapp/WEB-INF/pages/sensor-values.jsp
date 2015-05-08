@@ -1,4 +1,3 @@
-
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
@@ -76,7 +75,13 @@
 </head>
 <body>
 	<div id="sensor">
-		
+		<h2>Sensor #${sensor.id}</h2>
+		<ul style="list-style-type: none;">
+			<li><b>Name:</b>${sensor.name}</li>
+			<li><b>Description:</b>${sensor.description}</li>
+			<li><b>Location:</b>${sensor.location}</li>
+			<li><b>Type:</b>${sensor.type}</li>
+		</ul>
 	</div>
 	<div id="day_chart" style="width: 900px; height: 500px"></div>
 	<div id="week_chart" style="width: 900px; height: 500px"></div>

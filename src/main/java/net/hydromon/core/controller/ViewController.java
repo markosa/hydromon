@@ -10,7 +10,9 @@ import net.hydromon.core.dto.SensorDTO;
 import net.hydromon.core.dto.SensorValueDTO;
 import net.hydromon.core.model.Sensor;
 import net.hydromon.core.model.SensorValue;
+import net.hydromon.core.model.User;
 import net.hydromon.core.service.SensorService;
+import net.hydromon.core.service.UserService;
 import net.hydromon.core.service.ValueService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class ViewController {
 	@Autowired
 	private ValueService valueService;
 
+	@Autowired
+	private UserService userService;
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView index() {
 		ModelAndView mav = new ModelAndView("index");
@@ -39,8 +44,45 @@ public class ViewController {
 		return mav;
 	}
 
+	@RequestMapping(value = "/user/{uid}", method = RequestMethod.GET)
+	public ModelAndView listSensors(@PathVariable String uid) {
+
+		ModelAndView mav = new ModelAndView("sensor-list");
+		
+		
+		User user = userService.getUser(uid);
+		List<SensorDTO> sensorsDTO = new ArrayList<SensorDTO>();
+
+		if (user != null) {
+
+			List<Sensor> sensors = sensorService.getSensors(user);
+
+			for (Sensor s : sensors) {
+
+				SensorDTO dto = new SensorDTO();
+				dto.setChart(s.getChart());
+				dto.setDescription(s.getDescription());
+				dto.setId(s.getId());
+				dto.setLocation(s.getLocation());
+				dto.setName(s.getName());
+				dto.setStatus("OK");
+				dto.setType(s.getType());
+				dto.setLatestValues(valueService.getLatestSensorValues(s, 3));
+				dto.setLatestValue(valueService.getLatestSensorValue(s));
+				
+				sensorsDTO.add(dto);
+
+			}
+
+		}
+
+		mav.addObject("sensors", sensorsDTO);
+
+		return mav;
+	}
+
 	@RequestMapping(value = "/sensor/{id}", method = RequestMethod.GET)
-	public ModelAndView listSensors(@PathVariable Long id) {
+	public ModelAndView listValues(@PathVariable Long id) {
 		ModelAndView mav = new ModelAndView("sensor-values");
 
 		Sensor sensor = sensorService.getSensor(id);
@@ -82,6 +124,7 @@ public class ViewController {
 		sensorDTO.setLocation(sensor.getLocation());
 		sensorDTO.setType(sensor.getType());
 		sensorDTO.setChart(sensor.getChart());
+		sensorDTO.setId(sensor.getId());
 
 		mav.addObject("sensor", sensorDTO);
 

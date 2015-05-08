@@ -1,16 +1,16 @@
 package net.hydromon.core.service.impl;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import net.hydromon.core.model.Sensor;
 import net.hydromon.core.model.SensorValue;
 import net.hydromon.core.repository.ValueRepository;
 import net.hydromon.core.service.ValueService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DefaultValueService implements ValueService {
@@ -34,5 +34,13 @@ public class DefaultValueService implements ValueService {
 		return valueRepository.findBySensorAndTimestampBetweenOrderByTimestampAsc(sensor, start, end);
 	}
 
+	public String getLatestSensorValue(Sensor sensor) {
+		SensorValue sv = valueRepository.getLatestSensorValue(sensor);
+		return sv != null ? sv.getValue() : null;
+	}
 
+	public List<String> getLatestSensorValues(Sensor sensor, int n) {
+		
+		return valueRepository.findBySensorOrderByTimestampDesc(sensor,new PageRequest(0, n));
+	}
 }

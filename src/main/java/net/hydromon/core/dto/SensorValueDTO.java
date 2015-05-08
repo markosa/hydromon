@@ -1,9 +1,6 @@
 package net.hydromon.core.dto;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import net.hydromon.core.dto.util.TimeformatUtil;
 
