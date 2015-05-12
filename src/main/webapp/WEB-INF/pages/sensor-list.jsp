@@ -42,11 +42,13 @@
 
 <c:forEach items="${sensors}" var="sensor" varStatus="loop">
 	<div id="sensor_${sensor.id}]">
-		<div id="chart_div_${sensor.id}" style="width: 200px; height: 120px; "></div>
+		<div id="chart_div_${sensor.id}" style="width: 200px; height: 120px;"></div>
 		<div id="chart_right_${sensor.id}">
-			${sensor.name} (${sensor.type}) #${sensor.id} @ ${sensor.location} <br />
-			<i>${sensor.description}</i> <br /> <b>Latest value:
-				${sensor.latestValue}</b>
+			<a href="/hydromon/sensor/${sensor.id}"> ${sensor.name}
+				(${sensor.type}) #${sensor.id} @ ${sensor.location} <br /> <i>${sensor.description}</i>
+				<br /> <b>Latest value: ${sensor.latestValue}</b>
+			</a>
+
 		</div>
 
 
