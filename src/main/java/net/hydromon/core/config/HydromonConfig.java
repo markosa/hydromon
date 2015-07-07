@@ -106,6 +106,9 @@ public class HydromonConfig extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/pics/**").addResourceLocations("/pics/");
         registry.addResourceHandler("/js/**").addResourceLocations("/js/");
         registry.addResourceHandler("/css/**").addResourceLocations("/css/");
+        registry.addResourceHandler("/assets/**").addResourceLocations("/assets/");
+        registry.addResourceHandler("/fonts/**").addResourceLocations("/fonts/");
+
     }
 
 	
