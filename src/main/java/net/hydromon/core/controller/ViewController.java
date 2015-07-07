@@ -3,11 +3,16 @@ package net.hydromon.core.controller;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 import net.hydromon.core.dto.SensorDTO;
 import net.hydromon.core.dto.SensorValueDTO;
+import net.hydromon.core.dto.StatisticsDTO;
+import net.hydromon.core.dto.util.DTOUtils;
+import net.hydromon.core.dto.util.TimeformatUtil;
 import net.hydromon.core.model.Sensor;
 import net.hydromon.core.model.SensorValue;
 import net.hydromon.core.model.User;
@@ -35,21 +40,59 @@ public class ViewController {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private DTOUtils dtoUtil;
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public ModelAndView index() {
-		ModelAndView mav = new ModelAndView("index");
-
-		mav.addObject("sensors", sensorService.getSensors());
-
-		return mav;
+	public String index() {
+		return "redirect:/user/markos";
 	}
+
+	public static final int DAY_RESOLUTION = 1; // Select every row = 1 min
+												// resolution
+	public static final int WEEK_RESOLUTION = 60; // Select every 60th row = 60
+													// min resolution
+	public static final int MONTH_RESOLUTION = 240; // 4 hour resolution
 
 	@RequestMapping(value = "/user/{uid}", method = RequestMethod.GET)
 	public ModelAndView listSensors(@PathVariable String uid) {
 
 		ModelAndView mav = new ModelAndView("sensor-list");
-		
-		
+
+		User user = userService.getUser(uid);
+
+		List<SensorDTO> sensorsDTO = new ArrayList<SensorDTO>();
+
+		if (user != null) {
+			mav.addObject("uid", uid);
+
+			List<Sensor> sensors = sensorService.getSensors(user);
+
+			for (Sensor s : sensors) {
+				SensorDTO dto = dtoUtil.convert(s);
+				dto.setStatus("OK");
+				dto.setLatestValues(valueService.getLatestSensorValues(s, 3));
+				SensorValue v = valueService.getLatestSensorValue(s);
+				if (v != null) {
+					dto.setLatestValue(v.getValue());
+					dto.setLatestValueTime(TimeformatUtil.formatDate(v.getTimestamp()));
+				}
+				sensorsDTO.add(dto);
+			}
+
+		}
+
+		mav.addObject("sensors", sensorsDTO);
+
+		return mav;
+	}
+
+	@RequestMapping(value = "/user/{uid}/{id}", method = RequestMethod.GET)
+	public ModelAndView listValues(@PathVariable String uid, @PathVariable Long id) {
+
+		ModelAndView mav = new ModelAndView("sensor-values");
+		mav.addObject("uid", uid);
+
 		User user = userService.getUser(uid);
 		List<SensorDTO> sensorsDTO = new ArrayList<SensorDTO>();
 
@@ -58,25 +101,21 @@ public class ViewController {
 			List<Sensor> sensors = sensorService.getSensors(user);
 
 			for (Sensor s : sensors) {
-
-				SensorDTO dto = new SensorDTO();
-				dto.setChart(s.getChart());
-				dto.setDescription(s.getDescription());
-				dto.setId(s.getId());
-				dto.setLocation(s.getLocation());
-				dto.setName(s.getName());
+				SensorDTO dto = dtoUtil.convert(s);
 				dto.setStatus("OK");
-				dto.setType(s.getType());
 				dto.setLatestValues(valueService.getLatestSensorValues(s, 3));
-				dto.setLatestValue(valueService.getLatestSensorValue(s));
-				
+				SensorValue v = valueService.getLatestSensorValue(s);
+				if (v != null) {
+					dto.setLatestValue(v.getValue());
+					dto.setLatestValueTime(TimeformatUtil.formatDate(v.getTimestamp()));
+				}
 				sensorsDTO.add(dto);
-
 			}
 
 		}
 
 		mav.addObject("sensors", sensorsDTO);
+		mav.addAllObjects(listValues(id).getModel());
 
 		return mav;
 	}
@@ -106,7 +145,6 @@ public class ViewController {
 		List<SensorValueDTO> day = new ArrayList<SensorValueDTO>();
 		List<SensorValueDTO> week = new ArrayList<SensorValueDTO>();
 		List<SensorValueDTO> month = new ArrayList<SensorValueDTO>();
-
 		for (SensorValue value : values) {
 			if (value.getTimestamp().after(tsDay))
 				day.add(new SensorValueDTO(id, value.getValue(), value.getTimestamp().getTime()));
@@ -116,23 +154,46 @@ public class ViewController {
 
 			if (value.getTimestamp().after(tsMonth))
 				month.add(new SensorValueDTO(id, value.getValue(), value.getTimestamp().getTime()));
+
 		}
 
-		SensorDTO sensorDTO = new SensorDTO();
-		sensorDTO.setDescription(sensor.getDescription());
-		sensorDTO.setName(sensor.getName());
-		sensorDTO.setLocation(sensor.getLocation());
-		sensorDTO.setType(sensor.getType());
-		sensorDTO.setChart(sensor.getChart());
-		sensorDTO.setId(sensor.getId());
+		SensorDTO sensorDTO = dtoUtil.convert(sensor);
 
 		mav.addObject("sensor", sensorDTO);
-
 		mav.addObject("dayValues", day);
+		mav.addObject("dayStatistics", calculateStatistics(day));
 		mav.addObject("weekValues", week);
+		mav.addObject("weekStatistics", calculateStatistics(week));
 		mav.addObject("monthValues", month);
-
+		mav.addObject("monthStatistics", calculateStatistics(month));
+		
 		return mav;
+	}
+
+	private StatisticsDTO calculateStatistics(List<SensorValueDTO> values) {
+		if (values != null && values.size() > 0) {
+			StatisticsDTO s = new StatisticsDTO();
+			s.setMax(Collections.max(values, new SensorValueComparator()).getValue());
+			s.setMin(Collections.min(values, new SensorValueComparator()).getValue());
+			Float total = 0f;
+			for (SensorValueDTO dto : values) {
+				total += new Float(dto.getValue());
+			}
+			s.setAvg(new Float(total / values.size()).toString());
+
+			return s;
+
+		}
+		
+		return null;
+	}
+
+}
+
+class SensorValueComparator implements Comparator<SensorValueDTO> {
+
+	public int compare(SensorValueDTO o1, SensorValueDTO o2) {
+		return new Float(o1.getValue()).compareTo(new Float(o2.getValue()));
 	}
 
 }

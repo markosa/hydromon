@@ -34,13 +34,12 @@ public class DefaultValueService implements ValueService {
 		return valueRepository.findBySensorAndTimestampBetweenOrderByTimestampAsc(sensor, start, end);
 	}
 
-	public String getLatestSensorValue(Sensor sensor) {
+	public SensorValue getLatestSensorValue(Sensor sensor) {
 		SensorValue sv = valueRepository.getLatestSensorValue(sensor);
-		return sv != null ? sv.getValue() : null;
+		return sv;
 	}
 
 	public List<String> getLatestSensorValues(Sensor sensor, int n) {
-		
 		return valueRepository.findBySensorOrderByTimestampDesc(sensor,new PageRequest(0, n));
 	}
 }

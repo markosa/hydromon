@@ -16,8 +16,11 @@ public class SensorDTO extends BaseResponseDTO {
 	private String location;
 	private String type;
 	private String chart;
-	
+	private String unit;
 	private String latestValue;
+	private String latestValueTime;
+	private StatisticsDTO statistics;
+	
 	private List<String> latestValues;
 	
 	
@@ -68,6 +71,24 @@ public class SensorDTO extends BaseResponseDTO {
 	}
 	public void setLatestValues(List<String> latestValues) {
 		this.latestValues = latestValues;
+	}
+	public String getLatestValueTime() {
+		return latestValueTime;
+	}
+	public void setLatestValueTime(String latestValueTime) {
+		this.latestValueTime = latestValueTime;
+	}
+	public String getUnit() {
+		return unit;
+	}
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
+	public StatisticsDTO getStatistics() {
+		return statistics;
+	}
+	public void setStatistics(StatisticsDTO statistics) {
+		this.statistics = statistics;
 	}
 	
 	

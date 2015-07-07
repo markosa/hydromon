@@ -35,8 +35,13 @@ public class Sensor {
 	private String type;
 	private String chart;
 	
+	private String unit;
+	
 	@OneToMany(mappedBy="sensor")
 	private List<SensorValue> sensorValues;
+	
+	@OneToMany(mappedBy="sensor")
+	private List<Alarm> alarms;
 	
 	public Long getId() {
 		return id;
@@ -103,6 +108,14 @@ public class Sensor {
 
 	public void setChart(String chart) {
 		this.chart = chart;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
 	}
 	
 	
